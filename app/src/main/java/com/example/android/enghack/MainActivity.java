@@ -26,7 +26,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
-    final int MAX_EVENTS = 49;
+    final int MAX_EVENTS = 100;
     int reload = 0;
     RequestQueue MyRequestQueue = null;
 
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
             JSONObject top = masterJSON.getJSONObject("distinctQueryResult");
             JSONArray rows = top.getJSONArray("rows");
             int length = 0;
-            if(rows.length() < 10){
-                length = rows.length();
-            } else {
+            if(rows.length() > MAX_EVENTS){
                 length = MAX_EVENTS;
+            } else {
+                length = events.size();
             }
             Log.d(LOG_TAG, "Length is " + length);
 
