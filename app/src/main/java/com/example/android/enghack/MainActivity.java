@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -24,22 +26,31 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
-    final int MAX_EVENTS = 20;
+    final int MAX_EVENTS = 49;
     RequestQueue MyRequestQueue = null;
 
     JSONObject masterJSON = null;
     ArrayList<Event> events = new ArrayList<Event>();
+
+    ProgressBar mProgressBar;
+    Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mProgressBar = findViewById(R.id.progressBar);
+        mButton = findViewById(R.id.button);
+
+        mButton.setVisibility(View.INVISIBLE);
+        mProgressBar.setProgress(0);
+
         init();
     }
 
     void init(){
-        String myURL = getString(R.string.url);
+        String myURL = getString(R.string.urlRetreive);
         MyRequestQueue = Volley.newRequestQueue(this);
 
         Log.d(LOG_TAG, "making my request");
@@ -47,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void createEvents() {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mButton.setVisibility(View.VISIBLE);
+
         try {
             JSONObject top = masterJSON.getJSONObject("distinctQueryResult");
             JSONArray rows = top.getJSONArray("rows");
