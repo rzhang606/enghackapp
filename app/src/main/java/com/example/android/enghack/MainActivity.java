@@ -24,6 +24,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
+    final int MAX_EVENTS = 20;
     RequestQueue MyRequestQueue = null;
 
     JSONObject masterJSON = null;
@@ -53,11 +54,14 @@ public class MainActivity extends AppCompatActivity {
             if(rows.length() < 10){
                 length = rows.length();
             } else {
-                length = 10;
+                length = MAX_EVENTS;
             }
+            Log.d(LOG_TAG, "Length is " + length);
+
 
             for(int i = 0; i < length; i++){
-                JSONObject myEvent = (JSONObject) rows.getJSONObject(0);
+                JSONObject myEvent = (JSONObject) rows.getJSONObject(i);
+                Log.d(LOG_TAG, myEvent.toString());
                 JSONObject fields = myEvent.getJSONObject("fields");
                 events.add(new Event(myEvent.getString("id"), fields.getString("Event"), fields.getString("Description"),
                         fields.getDouble("Latitude"), fields.getDouble("Longitude"), fields.getString("Type")));
@@ -110,6 +114,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void click(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("EVENTS", events);
+        intent.putExtra("Bundle", bundle);
+
         startActivity(intent);
     }
 }

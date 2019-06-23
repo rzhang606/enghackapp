@@ -2,6 +2,7 @@ package com.example.android.enghack;
 
 import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -10,9 +11,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    final String LOG_TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
+    ArrayList<Event> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,12 +27,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        events = getIntent().getBundleExtra("Bundle").getParcelableArrayList("EVENTS");
     }
 
     public void addMarkers() {
         mMap.addMarker(new MarkerOptions().title("HELLO!").
                 position(new LatLng(43.473, -80.54)).
                 snippet("DESCRIPTION"));
+        for(int i = 0; i < events.size(); i++){
+            Event mEvent = events.get(i);
+            Log.d(LOG_TAG, "Event Created: " + mEvent.toString());
+            mMap.addMarker(new MarkerOptions().title(mEvent.getEventName())
+                    .snippet(mEvent.getDescription())
+                    .position(new LatLng(mEvent.getLatitude(), mEvent.getLongitude())));
+        }
     }
 
 
