@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
     final int MAX_EVENTS = 49;
+    int reload = 0;
     RequestQueue MyRequestQueue = null;
 
     JSONObject masterJSON = null;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         mButton.setVisibility(View.INVISIBLE);
         mProgressBar.setProgress(0);
 
+        reload =  getIntent().getIntExtra("RELOAD", 0);
+
         init();
     }
 
@@ -58,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void createEvents() {
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mButton.setVisibility(View.VISIBLE);
-
         try {
             JSONObject top = masterJSON.getJSONObject("distinctQueryResult");
             JSONArray rows = top.getJSONArray("rows");
@@ -79,6 +79,14 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject fields = myEvent.getJSONObject("fields");
                 events.add(new Event(myEvent.getString("id"), fields.getString("Event"), fields.getString("Description"),
                         fields.getDouble("Latitude"), fields.getDouble("Longitude"), fields.getString("Type")));
+            }
+
+
+            if(reload == 1){
+                startMap();
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+                mButton.setVisibility(View.VISIBLE);
             }
 
             Log.d(LOG_TAG, events.toString());
@@ -100,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                     masterJSON = new JSONObject(response);
                     Log.d(LOG_TAG, masterJSON.toString());
                     createEvents();
-
                 } catch (Exception e){
                     e.printStackTrace();
                     Log.d(LOG_TAG, "JSON Conversion error");
@@ -127,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click(View view) {
+        startMap();
+    }
+
+    public void startMap() {
         Intent intent = new Intent(this, MapsActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("EVENTS", events);

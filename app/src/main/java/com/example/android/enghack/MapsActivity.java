@@ -1,14 +1,18 @@
 package com.example.android.enghack;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +30,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +40,7 @@ import java.util.Map;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     final String LOG_TAG = MapsActivity.class.getSimpleName();
+    JSONObject masterJSON = null;
     private GoogleMap mMap;
     ArrayList<Event> events;
     private Event setEvent = new Event("","","",0.0,0.0,"");
@@ -41,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -81,9 +90,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case "events":
                 return BitmapDescriptorFactory.HUE_ORANGE;
         }
-
-
-
         return (float) 0.0;
     }
 
@@ -149,13 +155,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onClick(DialogInterface dialog, int which) {
                         newEvent.Type = String.valueOf(taskEditText.getText());
                         Log.d(LOG_TAG, "Set Event is now: " + newEvent);
+                        createNewEvent(newEvent);
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
         dialog.show();
     }
-
 
     /**
      * Manipulates the map once available.
@@ -218,5 +224,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mRequestQueue.add(MyStringRequest);
 
+    }
+
+    /**
+     * Allows users to reload for new data
+     */
+    public void reload(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("RELOAD", 1);
+        Log.d("INTENT", "SENDING: ... " + intent.toString());
+        startActivity(intent);
     }
 }
