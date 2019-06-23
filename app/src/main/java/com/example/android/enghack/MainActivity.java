@@ -26,7 +26,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     final String LOG_TAG = MainActivity.class.getSimpleName();
-    final int MAX_EVENTS = 100;
+    final int MAX_EVENTS = 70;
     int reload = 0;
     RequestQueue MyRequestQueue = null;
 
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             if(rows.length() > MAX_EVENTS){
                 length = MAX_EVENTS;
             } else {
-                length = events.size();
+                length = rows.length();
             }
             Log.d(LOG_TAG, "Length is " + length);
 
