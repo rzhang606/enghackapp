@@ -53,7 +53,7 @@ public class Event implements Parcelable {
 
     @Override
     public String toString() {
-        return String.format("Name:%s Description: %s Latitude %s, Longitude %s", getEventName(), getDescription(), getLatitude(), getLongitude());
+        return String.format("Name:%s Description: %s Latitude %s, Longitude %s , Type: %s", getEventName(), getDescription(), getLatitude(), getLongitude(), getType());
     }
 
     String getId() {

@@ -2,9 +2,13 @@ package com.example.android.enghack;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final String LOG_TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     ArrayList<Event> events;
+    private Event setEvent = new Event("","","",0.0,0.0,"");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(LOG_TAG, "Null Pointer Error when setting colors");
         }
     }
-
     Float colorSelector(String type){
         Log.d(LOG_TAG, "Type is "+ type);
         switch (type){
@@ -77,6 +81,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case "events":
                 return BitmapDescriptorFactory.HUE_ORANGE;
         }
+
+
+
         return (float) 0.0;
     }
 
@@ -85,9 +92,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener(){
             @Override
             public void onMapLongClick(LatLng latLng) {
-
+                setEvent.Latitude=latLng.latitude;
+                setEvent.Longitude=latLng.longitude;
+                getEventDetails();
             }
         });
+    }
+
+    /**
+     * The following 4 methods allow users to specify an event to add
+     */
+    private void getEventDetails(){
+         showAddItemDialog(MapsActivity.this, setEvent);
+    }
+    private void showAddItemDialog(final Context c, final Event newEvent) {
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Add a New Event")
+                .setMessage("What is the title?")
+                .setView(taskEditText)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newEvent.EventName = String.valueOf(taskEditText.getText());
+                        addDescription(c, newEvent);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+    private void addDescription(final Context c, final Event newEvent) {
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Add a description.")
+                .setView(taskEditText)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newEvent.Description = String.valueOf(taskEditText.getText());
+                        addType(c, newEvent);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+    private void addType(final Context c, final Event newEvent) {
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Add a Type of event")
+                .setMessage("food, shopping, washroom, garbage, events")
+                .setView(taskEditText)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newEvent.Type = String.valueOf(taskEditText.getText());
+                        Log.d(LOG_TAG, "Set Event is now: " + newEvent);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
     }
 
 
@@ -109,8 +175,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(waterloo, zoom));
 
         addMarkers();
+        setMapLongClick(mMap);
     }
 
+    /**
+     * Creates a new event, posts towards the API
+     * @param event - event being sent
+     */
     public void createNewEvent(final Event event){
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         String url = getString(R.string.urlInsert);
