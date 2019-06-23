@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">EngHack</string>
+    <string name="url">https://yathinosaur.api.stdlib.com/http-project@dev/receive_events/</string>
+</resources>
